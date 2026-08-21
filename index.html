@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>✋ Hand Flute — Play Music With Your Hands</title>
+  <meta name="description" content="An interactive flute instrument controlled by hand gestures detected via your webcam. Show fingers to play different notes." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Animated background particles -->
+  <div class="bg-particles" id="bgParticles"></div>
+
+  <!-- Main App Container -->
+  <div class="app-container">
+
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo">
+        <span class="logo-icon">🎵</span>
+        <div class="logo-text">
+          <h1>Hand Flute</h1>
+          <p>Play music with your hands</p>
+        </div>
+      </div>
+      <div class="status-badge" id="statusBadge">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusText">Camera Off</span>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+      <!-- Camera Panel -->
+      <section class="camera-panel">
+        <div class="camera-wrapper" id="cameraWrapper">
+          <video id="webcamVideo" autoplay muted playsinline></video>
+          <canvas id="overlayCanvas"></canvas>
+
+          <!-- Start overlay -->
+          <div class="camera-start-overlay" id="cameraStartOverlay">
+            <div class="start-icon">📷</div>
+            <h2>Enable Your Camera</h2>
+            <p>Your camera feed stays local — nothing is uploaded.</p>
+            <button class="btn-start" id="btnStart">
+              <span>Start Playing</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+          </div>
+
+          <!-- Gesture label overlay -->
+          <div class="gesture-overlay" id="gestureOverlay" style="display:none;">
+            <div class="gesture-label" id="gestureLabel">
+              <span class="gesture-emoji" id="gestureEmoji">✊</span>
+              <span class="gesture-name" id="gestureName">No Gesture</span>
+            </div>
+          </div>
+
+          <!-- Note display on camera -->
+          <div class="note-pill" id="notePill" style="display:none;">
+            <span id="notePillText">—</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Panel -->
+      <aside class="right-panel">
+
+        <!-- Current Note Card -->
+        <div class="card note-card" id="noteCard">
+          <div class="card-label">PLAYING</div>
+          <div class="note-display">
+            <div class="note-name" id="currentNoteName">—</div>
+            <div class="note-freq" id="currentNoteFreq">— Hz</div>
+          </div>
+          <div class="note-visualizer">
+            <div class="wave-bar" id="waveBar1"></div>
+            <div class="wave-bar" id="waveBar2"></div>
+            <div class="wave-bar" id="waveBar3"></div>
+            <div class="wave-bar" id="waveBar4"></div>
+            <div class="wave-bar" id="waveBar5"></div>
+            <div class="wave-bar" id="waveBar6"></div>
+            <div class="wave-bar" id="waveBar7"></div>
+          </div>
+        </div>
+
+        <!-- Gesture Guide -->
+        <div class="card gesture-guide">
+          <div class="card-label">GESTURE GUIDE</div>
+          <div class="gesture-list" id="gestureList">
+
+            <div class="gesture-item" id="guide-thumb" data-gesture="thumb">
+              <div class="gesture-item-icon">👍</div>
+              <div class="gesture-item-info">
+                <span class="gesture-item-name">Thumbs Up</span>
+                <span class="gesture-item-note">C4 · 261 Hz</span>
+              </div>
+              <div class="gesture-item-bar">
+                <div class="gesture-item-fill" style="background: #a78bfa;"></div>
+              </div>
+            </div>
+
+            <div class="gesture-item" id="guide-1" data-gesture="1">
+              <div class="gesture-item-icon">☝️</div>
+              <div class="gesture-item-info">
+                <span class="gesture-item-name">1 Finger</span>
+                <span class="gesture-item-note">E4 · 330 Hz</span>
+              </div>
+              <div class="gesture-item-bar">
+                <div class="gesture-item-fill" style="background: #60a5fa;"></div>
+              </div>
+            </div>
+
+            <div class="gesture-item" id="guide-2" data-gesture="2">
+              <div class="gesture-item-icon">✌️</div>
+              <div class="gesture-item-info">
+                <span class="gesture-item-name">2 Fingers</span>
+                <span class="gesture-item-note">G4 · 392 Hz</span>
+              </div>
+              <div class="gesture-item-bar">
+                <div class="gesture-item-fill" style="background: #34d399;"></div>
+              </div>
+            </div>
+
+            <div class="gesture-item" id="guide-3" data-gesture="3">
+              <div class="gesture-item-icon">🤟</div>
+              <div class="gesture-item-info">
+                <span class="gesture-item-name">3 Fingers</span>
+                <span class="gesture-item-note">A4 · 440 Hz</span>
+              </div>
+              <div class="gesture-item-bar">
+                <div class="gesture-item-fill" style="background: #fb923c;"></div>
+              </div>
+            </div>
+
+            <div class="gesture-item" id="guide-open" data-gesture="open">
+              <div class="gesture-item-icon">✋</div>
+              <div class="gesture-item-info">
+                <span class="gesture-item-name">Open Palm</span>
+                <span class="gesture-item-note">C5 · 523 Hz</span>
+              </div>
+              <div class="gesture-item-bar">
+                <div class="gesture-item-fill" style="background: #f472b6;"></div>
+              </div>
+            </div>
+
+            <div class="gesture-item" id="guide-none" data-gesture="none">
+              <div class="gesture-item-icon">✊</div>
+              <div class="gesture-item-info">
+                <span class="gesture-item-name">Fist / None</span>
+                <span class="gesture-item-note">Silence</span>
+              </div>
+              <div class="gesture-item-bar">
+                <div class="gesture-item-fill" style="background: #6b7280;"></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Volume Control -->
+        <div class="card controls-card">
+          <div class="card-label">CONTROLS</div>
+          <div class="control-row">
+            <label for="volumeSlider">
+              <span>🔊</span> Volume
+            </label>
+            <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.6" />
+          </div>
+          <div class="control-row">
+            <label for="vibratoSlider">
+              <span>〰️</span> Vibrato
+            </label>
+            <input type="range" id="vibratoSlider" min="0" max="10" step="0.1" value="4" />
+          </div>
+        </div>
+
+      </aside>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>🎵 Hand Flute · Powered by MediaPipe Hands + Web Audio API · Camera stays local</p>
+    </footer>
+
+  </div>
+
+  <!-- MediaPipe Hands via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+  <script src="app.js"></script>
+</body>
+</html>
